@@ -1,8 +1,5 @@
 package com.ignite.analytics;
 
-import java.text.DateFormat;
-import java.text.ParseException;
-import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
@@ -23,9 +20,9 @@ import org.jsoup.select.Elements;
 import com.google.common.base.Strings;
 
 /**
- * Count how many posts were made in July of 2014.
+ * Determine how many posts were tagged with Apache Storm.
  */
-public class PostsInJulyMapReduce {
+public class ApacheStormTaggedPostsMapReduce {
 	public static ArrayList<String> readNextBatch(LineIterator itr) {
 		ArrayList<String> linesBatch = new ArrayList<String>();
 
@@ -57,12 +54,12 @@ public class PostsInJulyMapReduce {
 
 		while (!linesBatch.isEmpty()) { 
 			// Execute task on the clustr and wait for its completion.
-			postCount += compute.execute(PostsInJulyTask.class, linesBatch);
+			postCount += compute.execute(ApacheStormTaggedPostsTask.class, linesBatch);
 
 			linesBatch = readNextBatch(itr);
 		}
 
-		System.out.println(">>> Total number of posts that were made in July of 2014 is '" + postCount + "'.");
+		System.out.println(">>> Total number of posts that were tagged with Apache Storm is '" + postCount + "'.");
 
 		Ignition.stop(true);
 	}
@@ -73,7 +70,7 @@ public class PostsInJulyMapReduce {
 	 * of the jobs to be executed (the mapping of those jobs to nodes will be handled automatically by the adapter in
 	 * a load-balanced fashion).
 	 */
-	private static class PostsInJulyTask extends ComputeTaskSplitAdapter<ArrayList<String>, Integer> {
+	private static class ApacheStormTaggedPostsTask extends ComputeTaskSplitAdapter<ArrayList<String>, Integer> {
 		@Override
 		public Collection<? extends ComputeJob> split(int gridSize, final ArrayList<String> posts) {
 			List<ComputeJob> jobs = new ArrayList<>();
@@ -85,24 +82,9 @@ public class PostsInJulyMapReduce {
         				Document doc = Jsoup.parse(post);
 						Element body = doc.body();
 						Elements row = body.select("row");
-						String creationDateStr = row.attr("CreationDate");
-						DateFormat df = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss");
+						String tags = row.attr("tags");
 
-				    	try {
-							if (!Strings.isNullOrEmpty(creationDateStr)) {
-								long timestamp = df.parse(creationDateStr).getTime();
-
-	            				// July 1, 2014 -> July 31, 2014
-	            				if (timestamp >= 1404172800000l && timestamp <= 1406764800000l) {
-	            					return 1;
-	            				}
-							}
-						}
-				    	catch (ParseException e) {
-				    		e.printStackTrace();
-						}
-
-				    	return 0;
+		                return ((tags.contains("<storm>") && tags.contains("<apache>")) || tags.contains("<apache-storm>")) ? 1 : 0;
 	            	}
 	            });
 			}
