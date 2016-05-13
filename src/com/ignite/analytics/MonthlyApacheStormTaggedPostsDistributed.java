@@ -43,9 +43,15 @@ public class MonthlyApacheStormTaggedPostsDistributed {
 		return linesBatch;
 	}
 
+	/**
+	 *   1. Read input file in batches of N lines
+	 *   2. Creates a child job for each line
+	 *   3. Sends created jobs to nodes in the grid for processing
+	 */
 	@SuppressWarnings("serial")
 	public static void start(String inputFilename) {
 		try (Ignite ignite = Ignition.start("ignite.xml")) {
+			// limit job execution on subset of nodes in the grid
 		    //ClusterGroup workers = ignite.cluster().forAttribute("ROLE", "worker");
 		    ClusterGroup remoteGroup = ignite.cluster().forRemotes();
 

@@ -36,7 +36,7 @@
     </bean>
 
     <bean abstract="true" id="ignite.cfg" class="org.apache.ignite.configuration.IgniteConfiguration">
-        <!-- Set to true to enable distributed class loading for examples, default is false. -->
+        <!-- Set to true to enable distributed class loading, default is false. -->
         <property name="peerClassLoadingEnabled" value="true"/>
 
         <!-- Enable task execution events for examples. -->
@@ -78,5 +78,28 @@
 				<property name="offHeapMaxMemory" value="0"/> 
 			</bean>
 		</property>
+
+		<!--  WeightedRandomLoadBalancingSpi picks a random node for job execution by default.
+			  You can also optionally assign weights to nodes, so nodes with larger weights will
+			  end up getting proportionally more jobs routed to them. By default all nodes get
+			  equal weight of 10. -->
+		<!--  property name="loadBalancingSpi">
+			<bean class="org.apache.ignite.spi.loadbalancing.weightedrandom.WeightedRandomLoadBalancingSpi">
+				<property name="useWeights" value="true"/>
+				<property name="nodeWeight" value="10"/>
+			</bean>
+		</property -->
+
+		<!-- By default, jobs are submitted to a thread pool and are executed in random order.
+			 However, if we need to have a fine-grained control over job ordering, we can enable CollisionSpi -->
+		<!--  property name="collisionSpi">
+		    <bean class="org.apache.ignite.spi.collision.priorityqueue.PriorityQueueCollisionSpi" -->
+		      <!-- 
+	    	    Change the parallel job number if needed.
+	        	Default is number of cores times 2.
+      		   -->
+	      		<!-- property name="parallelJobsNumber" value="5"/>
+	    	</bean>
+	  	</property -->
     </bean>
 </beans>
