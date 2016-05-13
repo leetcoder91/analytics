@@ -46,7 +46,7 @@ public class MonthlyApacheStormTaggedPosts {
 
 	@SuppressWarnings("serial")
 	public static void start(String inputFilename) {
-		try (Ignite ignite = Ignition.start("Z:\\Nikhil\\Java\\stack-exchange-data\\ignite\\apache-ignite-fabric-1.5.0.final-bin\\apache-ignite-fabric-1.5.0.final-bin\\examples\\config\\example-ignite.xml")) {
+		try (Ignite ignite = Ignition.start("ignite.xml")) {
 		    //ClusterGroup workers = ignite.cluster().forAttribute("ROLE", "worker");
 		    ClusterGroup remoteGroup = ignite.cluster().forRemotes();
 
